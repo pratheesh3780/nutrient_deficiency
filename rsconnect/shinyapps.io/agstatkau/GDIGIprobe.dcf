@@ -1,0 +1,13 @@
+name: GDIGIprobe
+title: GDIGIprobe
+username: agstatkau
+account: agstatkau
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 10701767
+bundleId: 8000290
+url: https://agstatkau.shinyapps.io/GDIGIprobe/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|LICENSE|README.md|testing.R
