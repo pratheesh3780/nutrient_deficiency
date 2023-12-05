@@ -68,51 +68,50 @@ coco_server <- function(input, output,session) {
       
       # RESULTS TABLE
      observeEvent(input$cal, {
+       result_df <- data.frame(
+         Value = sapply(1:nrow(base_data), function(i) {
+           if (!is.null(input[[paste0("numeric_", i)]])) {
+             input[[paste0("numeric_", i)]]
+           } else {
+             NA
+           }
+         })
+       )
+       # Filter rows based on any_odd_click
+       any_odd_click_values <- sapply(1:(nrow(base_data) - 1), function(i) {
+         click_count <- input[[paste0("button_", i)]]
+         click_count %% 2 == 1
+       })
+       
+       data_cal<-as.data.frame(cbind(base_data, result_df))
+       data_cal$click <- c(any_odd_click_values, NA)
+       #row.names
+       rownames(data_cal) <- base_data[,1]
+       data_cal <- subset(data_cal, click == TRUE | is.na(click))
+       
+       ### residual
+       # Compute the sum of all rows except the last one
+       sum_except_last_row <- sum(head(data_cal$Value, -1))
+       
+       # Set the last row value as 100 minus the sum of previous rows
+       data_cal[nrow(data_cal), "Value"] <- 100 - sum_except_last_row
+       
+       ## Geometric mean
+       non_zero_values <- data_cal$Value[data_cal$Value != 0]# Extract non-zero values
+       non_zero_values_except_last <- non_zero_values[-length(non_zero_values)] # Exclude the last value
+       gm <- exp(mean(log(non_zero_values_except_last), na.rm = TRUE))# Compute geometric mean
+       
+       data_cal$V<-log(data_cal$Value/gm)
+       data_cal$V[data_cal$V == -Inf] <- 0
+       data_cal$Index<-(data_cal$V-data_cal$mean)/data_cal$SD
+       # Create the "status" column based on the Index values
+       data_cal$Status <- ifelse(data_cal$Index > 0, "Balance", "Imbalance")
+       data_cal <- data_cal %>%
+         filter(Value != 0) %>%
+         select(Index, Status) %>%
+         slice(-n())
       output$result_table <- renderFormattable({
-        result_df <- data.frame(
-          Value = sapply(1:nrow(base_data), function(i) {
-            if (!is.null(input[[paste0("numeric_", i)]])) {
-              input[[paste0("numeric_", i)]]
-            } else {
-              NA
-            }
-          })
-        )
-        # Filter rows based on any_odd_click
-        any_odd_click_values <- sapply(1:(nrow(base_data) - 1), function(i) {
-          click_count <- input[[paste0("button_", i)]]
-          click_count %% 2 == 1
-        })
-        
-        data_cal<-as.data.frame(cbind(base_data, result_df))
-        data_cal$click <- c(any_odd_click_values, NA)
-        #row.names
-        rownames(data_cal) <- base_data[,1]
-        data_cal <- subset(data_cal, click == TRUE | is.na(click))
-      
-        ### residual
-        # Compute the sum of all rows except the last one
-        sum_except_last_row <- sum(head(data_cal$Value, -1))
-        
-        # Set the last row value as 100 minus the sum of previous rows
-        data_cal[nrow(data_cal), "Value"] <- 100 - sum_except_last_row
-        
-        ## Geometric mean
-        non_zero_values <- data_cal$Value[data_cal$Value != 0]# Extract non-zero values
-        non_zero_values_except_last <- non_zero_values[-length(non_zero_values)] # Exclude the last value
-        gm <- exp(mean(log(non_zero_values_except_last), na.rm = TRUE))# Compute geometric mean
-    
-        data_cal$V<-log(data_cal$Value/gm)
-        data_cal$V[data_cal$V == -Inf] <- 0
-        data_cal$Index<-(data_cal$V-data_cal$mean)/data_cal$SD
-        # Create the "status" column based on the Index values
-        data_cal$Status <- ifelse(data_cal$Index > 0, "Balance", "Imbalance")
-        data_cal <- data_cal %>%
-          filter(Value != 0) %>%
-          select(Index, Status) %>%
-          slice(-n())
-        
-        
+     
         # A formatter function to format "Balance" and "Imbalance" values
         status_formatter <- formatter(
           "span",
@@ -131,6 +130,18 @@ coco_server <- function(input, output,session) {
           )
         )
       })
+      
+      # Identifying Imbalance rows and creating blinking text
+      imbalance_rows <- data_cal[data_cal$Status == "Imbalance", ]
+      imbalance_row_names <- rownames(imbalance_rows)
+      
+      
+      
+      output$htmlout <- renderUI({
+        HTML(paste("Nutrient Imbalance detected in: ",
+                   paste0("<span style='color:red; font-weight:bold;'>", paste(imbalance_row_names, collapse = ", "), "</span>")))
+      })
+   
       })
       
       

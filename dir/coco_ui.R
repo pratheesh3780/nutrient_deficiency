@@ -128,8 +128,26 @@ coco_ui <- function(){
            box( title = HTML('<p><span style="font-weight: bold; color: #b06000;">Analysis result will appear here:-</span></p> 
                           <span style="font-weight: bold; color: #b06000; font-size: 10px;">വിശകലന ഫലം ഇവടെ കാണാം </span>'),
                 width = NULL,
-                formattableOutput("result_table")
-               
+                formattableOutput("result_table"),
+                tags$br(),
+                tags$style(HTML("
+        .large-blinking-text {
+          font-size: 20px; /* Change the font size as desired */
+          animation: blinker 1s linear infinite;
+        }
+        
+        @keyframes blinker {
+          0% { opacity: 1.0; }
+          50% { opacity: 0.0; }
+          100% { opacity: 1.0; }
+        }
+      ")),
+                tags$div(
+                  style = "display: flex; justify-content: center;",  
+                  class = "large-blinking-text",
+                  htmlOutput("htmlout")
+                )
+          
            )                                                                                                                                                     
            
            )
