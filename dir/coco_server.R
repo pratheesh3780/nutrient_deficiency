@@ -47,21 +47,23 @@ coco_server <- function(input, output,session) {
             }
           })
         )
-        row.names(result_df)<-base_data[,1]
-        colnames(result_df)<-c("value entered")
-        # Calculate the sum of the 'Value entered' column
+        row.names(result_df) <- base_data[,1]
+        colnames(result_df) <- c("value entered")
         sum_values <- sum(result_df$`value entered`, na.rm = TRUE)
-        
-        # Set the last row value as 100 minus the sum of previous rows
         result_df[nrow(result_df), "value entered"] <- 100 - sum_values
         
-        # Filter out rows where 'Value' column is non-zero
-        result_df <- result_df %>%
-          filter(`value entered`!= 0)
-       
-        
-        result_df
-      },rownames = TRUE)
+        # Filter rows based on any_odd_click
+        any_odd_click_values <- sapply(1:(nrow(base_data) - 1), function(i) {
+          click_count <- input[[paste0("button_", i)]]
+          click_count %% 2 == 1
+        })
+        result_df$click <- c(any_odd_click_values, NA)
+        # Filter result_df based on any_odd_click
+        filtered_result_df <- subset(result_df, click == TRUE | is.na(click))
+        filtered_result_df <- filtered_result_df %>% select(-click)
+        filtered_result_df
+      }, rownames = TRUE, digits = 5)
+      
       
       
       # RESULTS TABLE
@@ -76,8 +78,17 @@ coco_server <- function(input, output,session) {
             }
           })
         )
+        # Filter rows based on any_odd_click
+        any_odd_click_values <- sapply(1:(nrow(base_data) - 1), function(i) {
+          click_count <- input[[paste0("button_", i)]]
+          click_count %% 2 == 1
+        })
+        
         data_cal<-as.data.frame(cbind(base_data, result_df))
-        row.names(data_cal)<-base_data[,1]
+        data_cal$click <- c(any_odd_click_values, NA)
+        #row.names
+        rownames(data_cal) <- base_data[,1]
+        data_cal <- subset(data_cal, click == TRUE | is.na(click))
       
         ### residual
         # Compute the sum of all rows except the last one
@@ -98,7 +109,8 @@ coco_server <- function(input, output,session) {
         data_cal$Status <- ifelse(data_cal$Index > 0, "Balance", "Imbalance")
         data_cal <- data_cal %>%
           filter(Value != 0) %>%
-          select(Index, Status)
+          select(Index, Status) %>%
+          slice(-n())
         
         
         # A formatter function to format "Balance" and "Imbalance" values

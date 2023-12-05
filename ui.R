@@ -23,17 +23,8 @@ ui <- dashboardPage(
       tags$br(),
       h5(
         tags$div(
-          tags$br(),
           "Developed by:",
           tags$br(),
-          tags$b("Neeshma N."),
-          tags$br(),
-          tags$b("MSc Scholar"),
-          tags$br(),
-          tags$b("Department of SSAC"),
-          tags$br(),
-          tags$br(),
-          "Guided by:",
           tags$br(),
           tags$b("Dr Kiran Karthik Raj"),
           tags$br(),
@@ -42,6 +33,25 @@ ui <- dashboardPage(
           tags$b("College of Agriculture, Vellayani"),
           tags$br(),
           tags$b("Kerala Agricultural University"),
+          tags$br(),
+          tags$br(),
+          tags$br(),
+          tags$b("Dr Pratheesh P Gopinath"),
+          tags$br(),
+          tags$b("Assistant Professor (AG.STAT)"),
+          tags$br(),
+          tags$b("College of Agriculture, Vellayani"),
+          tags$br(),
+          tags$b("Kerala Agricultural University"),
+          tags$br(),
+          tags$br(),
+          "Coconut module:",
+          tags$br(),
+          tags$b("Neeshma N."),
+          tags$br(),
+          tags$b("MSc Scholar"),
+          tags$br(),
+          tags$b("Department of SSAC"),
           tags$br(),
           tags$br(),
           "Post your queries at: kiran.kr@kau.in",
@@ -97,8 +107,7 @@ ui <- dashboardPage(
           HTML("<b style='color: #a86b32'>Introduction to G-DIGIprobe</b>")
         ),
         tags$p(
-          HTML("<p style='text-align: justify;'>Introduction
-Several strategies were developed for identification of nutrient imbalance in crop
+          HTML("<p style='text-align: justify;'>Several strategies were developed for identification of nutrient imbalance in crop
 plants. Among them, compositional nutrient diagnosis (CND) norms are recognised as the
 most powerful and scientific approach. As compared to other diagnostic tools, CND offers a
 generic tactics to profile the nutrient imbalance based on the diagnostic standards developed

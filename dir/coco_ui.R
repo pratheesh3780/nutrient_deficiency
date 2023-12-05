@@ -65,7 +65,7 @@ coco_ui <- function(){
                      numericInput(
                        inputId = paste0("numeric_", i),
                        label = paste0("Enter data for ", base_data[i, 1]),
-                       value = 0,
+                       value = default_values_coco[i],
                        min = 0
                      )
                    )
